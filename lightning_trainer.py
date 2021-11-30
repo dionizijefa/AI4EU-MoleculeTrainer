@@ -11,7 +11,7 @@ from architecture import EGConvModel
 import pytorch_lightning as pl
 
 
-root = Path(__file__).resolve().parents[2].absolute()
+root = Path(__file__).resolve().parents[0].absolute()
 
 
 @dataclasses.dataclass(
@@ -21,7 +21,7 @@ class Conf:
     gpus: int = 1
     seed: int = 42
     use_16bit: bool = False
-    save_dir = '{}/models/'.format(root)
+    save_dir = '{}'.format(root)
     lr: float = 1e-4
     batch_size: int = 16
     epochs: int = 300

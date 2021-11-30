@@ -19,17 +19,19 @@ import pandas as pd
 root = Path(__file__).resolve().parents[0].absolute()
 
 
-def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
+def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu, n_calls, n_random_starts):
     """Training with 5-fold cross validation for molecular prediction tasks"""
 
+    print('Starting optimization preprocessing')
     data = pd.read_csv(data_filename)
+    data = data.loc[~data[target_col].isna()]
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
     if not ((data.iloc[0][target_col] == 0) or (data.iloc[0][target_col] == 1)):
         problem = 'regression'
     else:
-        if data['target_col'].value_counts(normalize=True)[1] > 0.3:
+        if data[target_col].value_counts(normalize=True)[1] > 0.3:
             problem = 'auc'
         else:
             problem = 'ap'
@@ -59,7 +61,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
             seed=seed,
         )
 
-        for fold in cross_val(data, target_col, batch_size, seed):
+        for fold in cross_val(data, target_col, problem=problem, batch_size=batch_size, seed=seed):
             model = EGConvNet(
                 problem,
                 conf.to_hparams(),
@@ -109,8 +111,8 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
     res = gp_minimize(inverse_ap,  # minimize the inverse of average precision
                       dimensions=dimensions,  # hyperparams
                       acq_func="EI",  # the acquisition function
-                      n_calls=40,  # the number of evaluations of f
-                      n_random_starts=10,  # the number of random initialization points
+                      n_calls=n_calls,  # the number of evaluations of f
+                      n_random_starts=n_random_starts,  # the number of random initialization points
                       random_state=seed)  # the random seed
 
     print('Value of the minimum: {}'.format(res.fun))
@@ -125,7 +127,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
             file.write("Bayes opt - EGConv")
             file.write("\n")
 
-    with open("./results/bayes_opt.txt", "a") as file:
+    with open("./logs/bayes_opt.txt", "a") as file:
         print('Target label: {}'.format(target_col), file=file)
         print('Hidden: {}'.format(res.x[0]), file=file)
         print('Layers: {}'.format(res.x[1]), file=file)
@@ -136,21 +138,24 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
         file.write("\n")
         file.write("\n")
 
-    return res.x[0], res.x[1], res.x[2], res.x[3], res.x[4], res.x[5],
+    return res.x[0], res.x[1], res.x[2], res.x[3], res.x[4]
 
 
 def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
           hidden_channels, num_layers, num_heads, num_bases, lr,
           name):
+    """Train a model"""
 
+    print('Starting training')
     data = pd.read_csv(data_filename)
+    data = data.loc[~data[target_col].isna()]
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
     if not ((data.iloc[0][target_col] == 0) or (data.iloc[0][target_col] == 1)):
         problem = 'regression'
     else:
-        if data['target_col'].value_counts(normalize=True)[1] > 0.3:
+        if data[target_col].value_counts(normalize=True)[1] > 0.3:
             problem = 'auc'
         else:
             problem = 'ap'
@@ -201,6 +206,7 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
         seed=seed,
     )
     model = EGConvNet(
+        problem,
         conf.to_hparams(),
         reduce_lr=conf.reduce_lr,
     )
@@ -213,7 +219,6 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
 
     logger = TensorBoardLogger(
         conf.save_dir,
-        name='model',
         version='{}'.format(name),
     )
 
@@ -234,7 +239,6 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
         deterministic=True,
         auto_lr_find=False,
         num_sanity_val_steps=0,
-        checkpoint_callback=False,
     )
 
     trainer.fit(model, train_loader, val_loader)
