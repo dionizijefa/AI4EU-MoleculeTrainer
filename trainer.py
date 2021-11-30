@@ -70,7 +70,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu, n_cal
 
             print("Starting training")
             trainer = pl.Trainer(
-                max_epochs=1,
+                max_epochs=100,
                 gpus=[gpu],  # [0]  # load from checkpoint instead of resume
                 weights_summary='top',
                 callbacks=[early_stop_callback],

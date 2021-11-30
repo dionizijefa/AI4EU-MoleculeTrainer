@@ -70,7 +70,7 @@ def cross_val(data, target_col, problem, batch_size, seed):
             train, val = train_test_split(
                 train_set,
                 test_size=0.15,
-                stratify=data[target_col],
+                stratify=train_set[target_col],
                 shuffle=True,
                 random_state=seed
             )

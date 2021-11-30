@@ -9,26 +9,26 @@ from pytorch_lightning import Trainer
 
 def main():
     # define required parameters specific to the dataset
-    smiles_col = "Drug"
-    target_col = "Y"
+    smiles_col = "canonical_smiles_ap_nonstereo"
+    target_col = "wd_consensus_1"
     batch_size = 32
 
     # run Bayesian otpimization wiith cross validation
     hidden, layers, heads, bases, lr = optimize(
-        data_filename="./data/bioavailability_ma.csv",
+        data_filename="./data/train.csv",
         smiles_col=smiles_col,
         target_col=target_col,
         batch_size=batch_size,
         seed=0,
         gpu=0,
-        n_calls=2,
-        n_random_starts=1,
+        n_calls=20,
+        n_random_starts=5,
     )
 
     # Train the model and evaluate on an outer test set
     name = 'evaluation'  # choose a name for the folder where the model is to be saved
     train(
-        data_filename="./data/bioavailability_ma.csv",
+        data_filename="./data/train.csv",
         smiles_col=smiles_col,
         target_col=target_col,
         batch_size=batch_size,
@@ -44,7 +44,7 @@ def main():
 
     """Evalaute the model on the test set"""
     #load the data
-    test = pd.read_csv('./data/bioavailability_ma.csv')
+    test = pd.read_csv('./data/test.csv')
     problem = task_type(test, target_col)
     test = standardise_dataset(test, smiles_col)  # don't forget to standardise the test set smiles
     test_loader = create_loader(test, target_col, batch_size=batch_size)
@@ -69,21 +69,17 @@ def main():
 
     # Inference on single samples can be done by calling model.forward() on the model
     model.eval()  # set this flag when doing inference, not required when running model.test()
-
-    #define an input molecule
+    # define an input molecule
     input = pd.DataFrame(
         {'name': 'Azithromycin',
          'smiles': 'CCC1C(C(C(N(CC(CC(C(C(C(C(C(=O)O1)C)OC2CC(C(C(O2)C)O)(C)OC)C)OC3C(C(CC(O3)C)N(C)C)O)(C)O)C)C)C)O)(C)O'},
         index=[0]
     )
-
-    #standardize the molecule
+    # standardize the molecule
     input = standardise_dataset(input, smiles_col='smiles')
-
-    #create loader
+    # create loader
     input_loader = create_loader(input, smiles_col='smiles', target_col=None, batch_size=batch_size)
-
-    #iterate through loader and make a prediction
+    # iterate through loader and make a prediction
     predictions = []
     for data in input_loader:
         output = model.forward(data)
