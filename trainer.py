@@ -16,13 +16,13 @@ from pytorch_lightning.loggers import TensorBoardLogger
 import pandas as pd
 
 
-root = Path(__file__).resolve().parents[2].absolute()
+root = Path(__file__).resolve().parents[0].absolute()
 
 
-def optimize(data, smiles_col, target_col, batch_size, seed, gpu):
+def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
     """Training with 5-fold cross validation for molecular prediction tasks"""
 
-    data = pd.read_csv('training_data_filename')
+    data = pd.read_csv(data_filename)
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
@@ -142,9 +142,11 @@ def optimize(data, smiles_col, target_col, batch_size, seed, gpu):
     return res.x[0], res.x[1], res.x[2], res.x[3], res.x[4], res.x[5],
 
 
-def train(data, smiles_col, target_col, batch_size, seed, gpu,
+def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
           hidden_channels, num_layers, num_heads, num_bases, lr,
           name):
+
+    data = pd.read_csv(data_filename)
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
