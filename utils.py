@@ -13,6 +13,17 @@ fdef_name = Path(RDConfig.RDDataDir) / 'BaseFeatures.fdef'
 factory = ChemicalFeatures.BuildFeatureFactory(str(fdef_name))
 
 
+def task_type(data, target_col):
+    if not ((data.iloc[0][target_col] == 0) or (data.iloc[0][target_col] == 1)):
+        problem = 'regression'
+    else:
+        if data[target_col].value_counts(normalize=True)[1] > 0.3:
+            problem = 'auc'
+        else:
+            problem = 'ap'
+
+    return problem
+
 def standardise_dataset(dataset, smiles_col):
     """ Runs standardizer for molecular prediction tasks"""
     standardized = []
@@ -89,17 +100,17 @@ def one_hot_vector(val, lst):
     return map(lambda x: x == val, lst)
 
 
-def create_loader(data, withdrawn_col, batch_size, **kwargs):
+def create_loader(data, target_col, batch_size, **kwargs):
     data_list = []
     for index, row in data.iterrows():
-        data_list.append(smiles2graph(row, withdrawn_col, **kwargs))
+        data_list.append(smiles2graph(row, target_col, **kwargs))
 
     data_loader = DataLoader(data_list, num_workers=0, batch_size=batch_size)
 
     return data_loader
 
 
-def smiles2graph(data, withdrawn_col=None, **kwargs):
+def smiles2graph(data, target_col=None, **kwargs):
     """
     Converts SMILES string to graph Data object
     :input: SMILES string (str)
@@ -110,7 +121,7 @@ def smiles2graph(data, withdrawn_col=None, **kwargs):
     # y = withdrawn_col
 
     try:
-        y = data[withdrawn_col]
+        y = data[target_col]
     except:
         pass
     smiles = data['standardized_smiles']

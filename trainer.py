@@ -1,8 +1,7 @@
-from utils import standardise_dataset, smiles2graph
+from utils import standardise_dataset, smiles2graph, task_type, cross_val
 from skopt.space import Categorical, Integer, Real
 from skopt.utils import use_named_args
 from lightning_trainer import Conf, EGConvNet
-from utils import cross_val
 import pytorch_lightning as pl
 import numpy as np
 from skopt import gp_minimize
@@ -28,13 +27,8 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu, n_cal
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
-    if not ((data.iloc[0][target_col] == 0) or (data.iloc[0][target_col] == 1)):
-        problem = 'regression'
-    else:
-        if data[target_col].value_counts(normalize=True)[1] > 0.3:
-            problem = 'auc'
-        else:
-            problem = 'ap'
+
+    problem = task_type(data, target_col)
 
     # standardize the data
     data = standardise_dataset(data, smiles_col)
@@ -149,16 +143,11 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
     print('Starting training')
     data = pd.read_csv(data_filename)
     data = data.loc[~data[target_col].isna()]
+
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
     # if regression optimize ap
-    if not ((data.iloc[0][target_col] == 0) or (data.iloc[0][target_col] == 1)):
-        problem = 'regression'
-    else:
-        if data[target_col].value_counts(normalize=True)[1] > 0.3:
-            problem = 'auc'
-        else:
-            problem = 'ap'
+    problem = task_type(data, target_col)
 
     # standardize the data
     data = standardise_dataset(data, smiles_col)

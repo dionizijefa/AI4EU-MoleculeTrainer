@@ -1,7 +1,8 @@
 from trainer import optimize, train
 from lightning_trainer import EGConvNet
-from utils import create_loader, standardise_dataset
+from utils import create_loader, standardise_dataset, task_type
 from pathlib import Path
+import pandas as pd
 
 
 def main():
@@ -48,6 +49,7 @@ def main():
     model.eval()  # set this flag when doing inference, not required when running model.test
 
     test = pd.read_csv('./data/test.csv')
+    problem = task_type(test, target_col)
     test = standardise_dataset(test, smiles_col)  # don't forget to standardise the test set smiles
     test_loader = create_loader(test, target_col, batch_size=batch_size)
     result = model.test(test_loader)
