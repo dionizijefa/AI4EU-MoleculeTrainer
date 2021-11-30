@@ -219,6 +219,7 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
 
     logger = TensorBoardLogger(
         conf.save_dir,
+        name='model',
         version='{}'.format(name),
     )
 
