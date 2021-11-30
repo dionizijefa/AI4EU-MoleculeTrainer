@@ -47,8 +47,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
 
     @use_named_args(dimensions=dimensions)
     def inverse_ap(hidden_channels, num_layers, num_heads, num_bases, lr):
-        fold_ap = []
-        fold_auroc = []
+        fold_results = []
         conf = Conf(
             batch_size=batch_size,
             reduce_lr=True,
@@ -75,7 +74,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
 
             print("Starting training")
             trainer = pl.Trainer(
-                max_epochs=100,
+                max_epochs=1,
                 gpus=[gpu],  # [0]  # load from checkpoint instead of resume
                 weights_summary='top',
                 callbacks=[early_stop_callback],
@@ -89,20 +88,20 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
             train_loader, val_loader, test_loader = fold
             trainer.fit(model, train_loader, val_loader)
             results = trainer.test(model, test_loader)
-            test_ap = round(results[0]['test_ap'], 3)
-            test_auc = round(results[0]['test_auc'], 3)
-            fold_ap.append(test_ap)
-            fold_auroc.append(test_auc)
+            if problem == 'ap':
+                results = round(results[0]['test_ap'], 3)
+            elif problem == 'auc':
+                results = round(results[0]['test_auc'], 3)
+            else:
+                results = round(results[0]['test_mse'], 3)
 
-        print('Average AP across folds: {}'.format(np.mean(fold_ap)))
-        print('Average AUC across folds: {}'.format(np.mean(fold_auroc)))
+            fold_result.append(results)
+
+        print('Average metric across folds: {}'.format(np.mean(fold_results)))
         print('\n')
 
-        for i, result in enumerate(fold_ap):
-            print('AP for fold {}= {}'.format(i, result))
-
-        for i, result in enumerate(fold_auroc):
-            print('AUC for fold {}= {}'.format(i, result))
+        for i, result in enumerate(fold_results):
+            print('Metric for fold {}= {}'.format(i, result))
 
         return 1 / np.mean(fold_ap)  # return inverse because you want to maximize it
 
@@ -134,8 +133,6 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
         print('Bases: {}'.format(res.x[3]), file=file)
         print('Learning rate: {}'.format(res.x[4], file=file))
         print('Res space: {}'.format(res.space), file=file)
-        print('AP on the outer test: {}'.format(target_col), file=file)
-        print('AUC on the outer test: {}'.format(target_col), file=file)
         file.write("\n")
         file.write("\n")
 

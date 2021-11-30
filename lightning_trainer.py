@@ -1,5 +1,3 @@
-import sys
-sys.path.append("..")
 from abc import ABC
 from pathlib import Path
 from pprint import pformat
@@ -9,7 +7,7 @@ import torch
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torchmetrics.functional import auroc, average_precision
-from smiles_only.EGConv import EGConvModel
+from architecture import EGConvModel
 import pytorch_lightning as pl
 
 
