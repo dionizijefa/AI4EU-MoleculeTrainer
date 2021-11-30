@@ -95,7 +95,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
             else:
                 results = round(results[0]['test_mse'], 3)
 
-            fold_result.append(results)
+            fold_results.append(results)
 
         print('Average metric across folds: {}'.format(np.mean(fold_results)))
         print('\n')
@@ -103,7 +103,7 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu):
         for i, result in enumerate(fold_results):
             print('Metric for fold {}= {}'.format(i, result))
 
-        return 1 / np.mean(fold_ap)  # return inverse because you want to maximize it
+        return 1 / np.mean(fold_results)  # return inverse because you want to maximize it
 
     print('Starting Bayesian optimization')
     res = gp_minimize(inverse_ap,  # minimize the inverse of average precision
