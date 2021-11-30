@@ -67,8 +67,8 @@ class EGConvNet(pl.LightningModule, ABC):
         )
         pl.seed_everything(hparams['seed'])
 
-    def forward(self, x, edge_index, batch):
-        out = self.model(x, edge_index, batch)
+    def forward(self, data):
+        out = self.model(data.x, data.edge_index, data.batch)
         return out
 
     def training_step(self, batch, batch_idx):

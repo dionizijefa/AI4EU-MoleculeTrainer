@@ -1,5 +1,5 @@
 from standardiser import standardise
-from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split, KFold
 from torch_geometric.data import DataLoader, Data
 from torch import Tensor, cat
 from rdkit import RDConfig, Chem
@@ -39,39 +39,47 @@ def standardise_dataset(dataset, smiles_col):
 
 def cross_val(data, target_col, problem, batch_size, seed):
     """Don't split rest of the splits on scaffolds"""
-    cv_splitter = StratifiedKFold(
-        n_splits=5,
-        shuffle=True,
-        random_state=seed,
-    )
 
-    loaders = []
-    for k, (train_index, test_index) in enumerate(
-            cv_splitter.split(data, data[target_col])
-    ):
-
-        test = data.iloc[test_index]
-        test_data_list = []
-        for index, row in test.iterrows():
-            test_data_list.append(smiles2graph(row, target_col))
-        test_loader = DataLoader(test_data_list, num_workers=0, batch_size=batch_size)
-
-        train_set = data.iloc[train_index]
-
-        train, val = train_test_split(
-            train_set,
-            test_size=0.15,
-            stratify=train_set[target_col],
+    if problem != 'regression':
+        cv_splitter = StratifiedKFold(
+            n_splits=5,
             shuffle=True,
-            random_state=seed
+            random_state=seed,
+        )
+    else:
+        cv_splitter = KFold(
+            n_splits=5,
+            shuffle=True,
+            random_state=seed,
         )
 
-        train_data_list = []
-        for index, row in train.iterrows():
-            train_data_list.append(smiles2graph(row, target_col))
+    loaders = []
+    if problem != 'regression':
+        for k, (train_index, test_index) in enumerate(
+                cv_splitter.split(data, data[target_col])
+        ):
 
-        # if we are doing classification use weighted sampling for the minority class
-        if problem != 'regression':
+            test = data.iloc[test_index]
+            test_data_list = []
+            for index, row in test.iterrows():
+                test_data_list.append(smiles2graph(row, target_col))
+            test_loader = DataLoader(test_data_list, num_workers=0, batch_size=batch_size)
+
+            train_set = data.iloc[train_index]
+
+            train, val = train_test_split(
+                train_set,
+                test_size=0.15,
+                stratify=data[target_col],
+                shuffle=True,
+                random_state=seed
+            )
+
+            train_data_list = []
+            for index, row in train.iterrows():
+                train_data_list.append(smiles2graph(row, target_col))
+
+            # if we are doing classification use weighted sampling for the minority class
             minority = train[target_col].value_counts()[1]
             majority = train[target_col].value_counts()[0]
             class_sample_count = [majority, minority]
@@ -83,12 +91,45 @@ def cross_val(data, target_col, problem, batch_size, seed):
             train_loader = DataLoader(train_data_list, num_workers=0, batch_size=batch_size,
                                       sampler=sampler, drop_last=True)
 
-        val_data_list = []
-        for index, row in val.iterrows():
-            val_data_list.append(smiles2graph(row, target_col))
-        val_loader = DataLoader(val_data_list, num_workers=0, batch_size=batch_size)
 
-        loaders.append([train_loader, val_loader, test_loader])
+            val_data_list = []
+            for index, row in val.iterrows():
+                val_data_list.append(smiles2graph(row, target_col))
+            val_loader = DataLoader(val_data_list, num_workers=0, batch_size=batch_size)
+
+            loaders.append([train_loader, val_loader, test_loader])
+
+    else:
+        for k, (train_index, test_index) in enumerate(
+                cv_splitter.split(data)
+        ):
+
+            test = data.iloc[test_index]
+            test_data_list = []
+            for index, row in test.iterrows():
+                test_data_list.append(smiles2graph(row, target_col))
+            test_loader = DataLoader(test_data_list, num_workers=0, batch_size=batch_size)
+
+            train_set = data.iloc[train_index]
+
+            train, val = train_test_split(
+                train_set,
+                test_size=0.15,
+                shuffle=True,
+                random_state=seed
+            )
+
+            train_data_list = []
+            for index, row in train.iterrows():
+                train_data_list.append(smiles2graph(row, target_col))
+            train_loader = DataLoader(train_data_list, num_workers=0, batch_size=batch_size, drop_last=True)
+
+            val_data_list = []
+            for index, row in val.iterrows():
+                val_data_list.append(smiles2graph(row, target_col))
+            val_loader = DataLoader(val_data_list, num_workers=0, batch_size=batch_size)
+
+            loaders.append([train_loader, val_loader, test_loader])
 
     return loaders
 

@@ -152,13 +152,21 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
     # standardize the data
     data = standardise_dataset(data, smiles_col)
 
-    train, val = train_test_split(
-        data,
-        test_size=0.15,
-        stratify=data[target_col],
-        shuffle=True,
-        random_state=seed
-    )
+    if problem != 'regression':
+        train, val = train_test_split(
+            data,
+            test_size=0.15,
+            stratify=data[target_col],
+            shuffle=True,
+            random_state=seed
+        )
+    else:
+        train, val = train_test_split(
+            data,
+            test_size=0.15,
+            shuffle=True,
+            random_state=seed
+        )
 
     train_data_list = []
     for index, row in train.iterrows():
