@@ -41,7 +41,6 @@ message TrainingEnd {
     string model_directory                = 1 ;
 }
 
-model_directory, problem, target_col, smiles
 message Input {
     string model_directory        = 1 ;
     string problem                = 2 ;
@@ -58,4 +57,5 @@ message Prediction {
 service MoleculeTrainer {
     rpc optimize(OptimizationConfig) returns (OptimizationOutput);
     rpc train(TrainingConfig) returns (TrainingEnd);
+    rpc predict(Input) returns (Prediction);
 }
