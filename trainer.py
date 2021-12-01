@@ -254,10 +254,10 @@ def predict(model_directory, problem, target_col, smiles):
         problem = 'regression'
 
     # load the modal
-    model_path = Path('.{}/checkpoint/'.format(model_directory))
+    model_path = Path('{}/checkpoint/'.format(model_directory))
     files = model_path.glob(r'**/*.ckpt')
-    files = [i for i in files]
-    checkpoint = load(str(files[0]))
+    files = [i for i in files][0]
+    checkpoint = load(str(files))
     hparams = checkpoint['hyper_parameters']
     state_dict = checkpoint['state_dict']
     model = EGConvNet(problem=problem, hparams=hparams)

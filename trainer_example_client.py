@@ -5,6 +5,7 @@ import click
 import pandas as pd
 from tqdm import tqdm
 from sklearn.metrics import average_precision_score
+from trainer import predict
 
 from utils import task_type, standardise_dataset, create_loader
 
@@ -65,7 +66,6 @@ response_training = stub.train(request_training)
 print('Directory of the trained model is')
 print(response_training.model_directory)
 
-"""Evalaute the model on the test set"""
 #load the data
 test = pd.read_csv('./data/test.csv')
 predictions = []
@@ -76,7 +76,8 @@ for smiles in tqdm(test[smiles_col]):
         target_col=target_col,
         smiles=smiles
     )
-    predictions.append(request_prediction.prediction)
+    response_prediction = stub.predict(request_prediction)
+    predictions.append(response_prediction.prediction)
 
 #Evaluate the model according to some metric
 average_precision = average_precision_score(test[target_col], predictions)
