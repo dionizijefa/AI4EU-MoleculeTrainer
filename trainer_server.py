@@ -31,7 +31,7 @@ class MoleculeTrainer(model_pb2_grpc.MoleculeTrainerServicer):
     def train(self, request, context):
         # define the buffer of the response :
         response = model_pb2.TrainingEnd()
-        response.model_dir = train(
+        response.model_directory = train(
             request.data_filepath,
             request.smiles_col,
             request.target_col,
