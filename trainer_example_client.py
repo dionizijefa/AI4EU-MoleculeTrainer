@@ -18,12 +18,12 @@ channel = grpc.insecure_channel('localhost:8061')
 stub = model_pb2_grpc.MoleculeTrainerStub(channel)
 
 # define required constants specific to the dataset
-smiles_col = "Drug"    # name of the smiles column
-target_col = "Y"                   # name of the target column
+smiles_col = "canonical_smiles_ap_nonstereo"    # name of the smiles column
+target_col = "wd_consensus_1"       # name of the target column
 batch_size = 32
-gpu = 0                                         # nvidia-smi GPU id
-n_calls = 2                                     # number of iterations of Bayesian optimization
-n_random_starts = 1                             # number of random restarts of Bayesian optimization
+gpu = 0                 # nvidia-smi GPU id
+n_calls = 15             # number of iterations of Bayesian optimization
+n_random_starts = 1     # number of random restarts of Bayesian optimization
 
 # define input configuration for the optimization procedure
 # run Bayesian otpimization wiith cross validation
