@@ -71,7 +71,7 @@ def optimize(data_filepath, smiles_col, target_col, batch_size, seed, gpu, n_cal
 
             print("Starting training")
             trainer = pl.Trainer(
-                max_epochs=100,
+                max_epochs=1,
                 gpus=[gpu],  # [0]  # load from checkpoint instead of resume
                 weights_summary='top',
                 callbacks=[early_stop_callback],
@@ -230,7 +230,7 @@ def train(data_filepath, smiles_col, target_col, batch_size, seed, gpu,
 
     print("Starting training")
     trainer = pl.Trainer(
-        max_epochs=100,
+        max_epochs=1,
         gpus=[gpu],  # [0]  # load from checkpoint instead of resume
         weights_summary='top',
         callbacks=[early_stop_callback, model_checkpoint],
