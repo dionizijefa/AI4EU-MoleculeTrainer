@@ -264,6 +264,7 @@ def predict(model_directory, problem, target_col, smiles):
     model.load_state_dict(state_dict)
 
     smiles = standardise.run(r'{}'.format(smiles))
+    smiles = pd.DataFrame({'standardized_smiles': smiles}, index=[0])
     data = smiles2graph(smiles, target_col)
     data.batch = zeros(data.num_nodes, dtype=long)
     output = model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
