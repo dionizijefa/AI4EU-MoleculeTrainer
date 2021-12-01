@@ -6,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 from sklearn.metrics import average_precision_score
 from trainer import predict
+import numpy as np
 
 from utils import task_type, standardise_dataset, create_loader
 
@@ -17,8 +18,8 @@ channel = grpc.insecure_channel('localhost:8061')
 stub = model_pb2_grpc.MoleculeTrainerStub(channel)
 
 # define required constants specific to the dataset
-smiles_col = "canonical_smiles_ap_nonstereo"    # name of the smiles column
-target_col = "wd_consensus_1"                   # name of the target column
+smiles_col = "Drug"    # name of the smiles column
+target_col = "Y"                   # name of the target column
 batch_size = 32
 gpu = 0                                         # nvidia-smi GPU id
 n_calls = 2                                     # number of iterations of Bayesian optimization
@@ -71,7 +72,7 @@ print(response_training.model_directory)
 test = pd.read_csv('./data/test.csv')
 predictions = []
 for smiles in tqdm(test[smiles_col]):
-    try:
+    try:  # have to drop invalid smiles from the testing set
         request_prediction = model_pb2.Input(
             model_directory=response_training.model_directory,
             problem='classification',
