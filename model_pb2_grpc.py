@@ -25,6 +25,11 @@ class MoleculeTrainerStub(object):
                 request_serializer=model__pb2.TrainingConfig.SerializeToString,
                 response_deserializer=model__pb2.TrainingEnd.FromString,
                 )
+        self.predict = channel.unary_unary(
+                '/MoleculeTrainer/predict',
+                request_serializer=model__pb2.Input.SerializeToString,
+                response_deserializer=model__pb2.Prediction.FromString,
+                )
 
 
 class MoleculeTrainerServicer(object):
@@ -43,6 +48,12 @@ class MoleculeTrainerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def predict(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_MoleculeTrainerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -55,6 +66,11 @@ def add_MoleculeTrainerServicer_to_server(servicer, server):
                     servicer.train,
                     request_deserializer=model__pb2.TrainingConfig.FromString,
                     response_serializer=model__pb2.TrainingEnd.SerializeToString,
+            ),
+            'predict': grpc.unary_unary_rpc_method_handler(
+                    servicer.predict,
+                    request_deserializer=model__pb2.Input.FromString,
+                    response_serializer=model__pb2.Prediction.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -98,5 +114,22 @@ class MoleculeTrainer(object):
         return grpc.experimental.unary_unary(request, target, '/MoleculeTrainer/train',
             model__pb2.TrainingConfig.SerializeToString,
             model__pb2.TrainingEnd.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def predict(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/MoleculeTrainer/predict',
+            model__pb2.Input.SerializeToString,
+            model__pb2.Prediction.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

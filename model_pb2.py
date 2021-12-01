@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x0bmodel.proto\"\xac\x01\n\x12OptimizationConfig\x12\x15\n\rdata_filepath\x18\x01 \x01(\t\x12\x12\n\nsmiles_col\x18\x02 \x01(\t\x12\x12\n\ntarget_col\x18\x03 \x01(\t\x12\x12\n\nbatch_size\x18\x04 \x01(\x05\x12\x0c\n\x04seed\x18\x05 \x01(\x05\x12\x0b\n\x03gpu\x18\x06 \x01(\x05\x12\x0f\n\x07n_calls\x18\x07 \x01(\x05\x12\x17\n\x0fn_random_starts\x18\x08 \x01(\x05\"s\n\x12OptimizationOutput\x12\x17\n\x0fhidden_channels\x18\x07 \x01(\x05\x12\x12\n\nnum_layers\x18\x08 \x01(\x05\x12\x11\n\tnum_heads\x18\t \x01(\x05\x12\x11\n\tnum_bases\x18\n \x01(\x05\x12\n\n\x02lr\x18\x0b \x01(\x02\"\xeb\x01\n\x0eTrainingConfig\x12\x15\n\rdata_filepath\x18\x01 \x01(\t\x12\x12\n\nsmiles_col\x18\x02 \x01(\t\x12\x12\n\ntarget_col\x18\x03 \x01(\t\x12\x12\n\nbatch_size\x18\x04 \x01(\x05\x12\x0c\n\x04seed\x18\x05 \x01(\x05\x12\x0b\n\x03gpu\x18\x06 \x01(\x05\x12\x17\n\x0fhidden_channels\x18\x07 \x01(\x05\x12\x12\n\nnum_layers\x18\x08 \x01(\x05\x12\x11\n\tnum_heads\x18\t \x01(\x05\x12\x11\n\tnum_bases\x18\n \x01(\x05\x12\n\n\x02lr\x18\x0b \x01(\x02\x12\x0c\n\x04name\x18\x0c \x01(\t\" \n\x0bTrainingEnd\x12\x11\n\tmodel_dir\x18\x01 \x01(\t\"\x1d\n\x0bInputSmiles\x12\x0e\n\x06smiles\x18\x01 \x01(\t\" \n\nPrediction\x12\x12\n\nprediction\x18\x01 \x01(\x02\x32o\n\x0fMoleculeTrainer\x12\x34\n\x08optimize\x12\x13.OptimizationConfig\x1a\x13.OptimizationOutput\x12&\n\x05train\x12\x0f.TrainingConfig\x1a\x0c.TrainingEndb\x06proto3'
+  serialized_pb=b'\n\x0bmodel.proto\"\xac\x01\n\x12OptimizationConfig\x12\x15\n\rdata_filepath\x18\x01 \x01(\t\x12\x12\n\nsmiles_col\x18\x02 \x01(\t\x12\x12\n\ntarget_col\x18\x03 \x01(\t\x12\x12\n\nbatch_size\x18\x04 \x01(\x05\x12\x0c\n\x04seed\x18\x05 \x01(\x05\x12\x0b\n\x03gpu\x18\x06 \x01(\x05\x12\x0f\n\x07n_calls\x18\x07 \x01(\x05\x12\x17\n\x0fn_random_starts\x18\x08 \x01(\x05\"s\n\x12OptimizationOutput\x12\x17\n\x0fhidden_channels\x18\x07 \x01(\x05\x12\x12\n\nnum_layers\x18\x08 \x01(\x05\x12\x11\n\tnum_heads\x18\t \x01(\x05\x12\x11\n\tnum_bases\x18\n \x01(\x05\x12\n\n\x02lr\x18\x0b \x01(\x02\"\xeb\x01\n\x0eTrainingConfig\x12\x15\n\rdata_filepath\x18\x01 \x01(\t\x12\x12\n\nsmiles_col\x18\x02 \x01(\t\x12\x12\n\ntarget_col\x18\x03 \x01(\t\x12\x12\n\nbatch_size\x18\x04 \x01(\x05\x12\x0c\n\x04seed\x18\x05 \x01(\x05\x12\x0b\n\x03gpu\x18\x06 \x01(\x05\x12\x17\n\x0fhidden_channels\x18\x07 \x01(\x05\x12\x12\n\nnum_layers\x18\x08 \x01(\x05\x12\x11\n\tnum_heads\x18\t \x01(\x05\x12\x11\n\tnum_bases\x18\n \x01(\x05\x12\n\n\x02lr\x18\x0b \x01(\x02\x12\x0c\n\x04name\x18\x0c \x01(\t\"&\n\x0bTrainingEnd\x12\x17\n\x0fmodel_directory\x18\x01 \x01(\t\"U\n\x05Input\x12\x17\n\x0fmodel_directory\x18\x01 \x01(\t\x12\x0f\n\x07problem\x18\x02 \x01(\t\x12\x12\n\ntarget_col\x18\x03 \x01(\t\x12\x0e\n\x06smiles\x18\x04 \x01(\t\" \n\nPrediction\x12\x12\n\nprediction\x18\x01 \x01(\x02\x32\x8f\x01\n\x0fMoleculeTrainer\x12\x34\n\x08optimize\x12\x13.OptimizationConfig\x1a\x13.OptimizationOutput\x12&\n\x05train\x12\x0f.TrainingConfig\x1a\x0c.TrainingEnd\x12\x1e\n\x07predict\x12\x06.Input\x1a\x0b.Predictionb\x06proto3'
 )
 
 
@@ -284,7 +284,7 @@ _TRAININGEND = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='model_dir', full_name='TrainingEnd.model_dir', index=0,
+      name='model_directory', full_name='TrainingEnd.model_directory', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -303,21 +303,42 @@ _TRAININGEND = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=545,
-  serialized_end=577,
+  serialized_end=583,
 )
 
 
-_INPUTSMILES = _descriptor.Descriptor(
-  name='InputSmiles',
-  full_name='InputSmiles',
+_INPUT = _descriptor.Descriptor(
+  name='Input',
+  full_name='Input',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='smiles', full_name='InputSmiles.smiles', index=0,
+      name='model_directory', full_name='Input.model_directory', index=0,
       number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='problem', full_name='Input.problem', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='target_col', full_name='Input.target_col', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='smiles', full_name='Input.smiles', index=3,
+      number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -334,8 +355,8 @@ _INPUTSMILES = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=579,
-  serialized_end=608,
+  serialized_start=585,
+  serialized_end=670,
 )
 
 
@@ -366,15 +387,15 @@ _PREDICTION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=610,
-  serialized_end=642,
+  serialized_start=672,
+  serialized_end=704,
 )
 
 DESCRIPTOR.message_types_by_name['OptimizationConfig'] = _OPTIMIZATIONCONFIG
 DESCRIPTOR.message_types_by_name['OptimizationOutput'] = _OPTIMIZATIONOUTPUT
 DESCRIPTOR.message_types_by_name['TrainingConfig'] = _TRAININGCONFIG
 DESCRIPTOR.message_types_by_name['TrainingEnd'] = _TRAININGEND
-DESCRIPTOR.message_types_by_name['InputSmiles'] = _INPUTSMILES
+DESCRIPTOR.message_types_by_name['Input'] = _INPUT
 DESCRIPTOR.message_types_by_name['Prediction'] = _PREDICTION
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -406,12 +427,12 @@ TrainingEnd = _reflection.GeneratedProtocolMessageType('TrainingEnd', (_message.
   })
 _sym_db.RegisterMessage(TrainingEnd)
 
-InputSmiles = _reflection.GeneratedProtocolMessageType('InputSmiles', (_message.Message,), {
-  'DESCRIPTOR' : _INPUTSMILES,
+Input = _reflection.GeneratedProtocolMessageType('Input', (_message.Message,), {
+  'DESCRIPTOR' : _INPUT,
   '__module__' : 'model_pb2'
-  # @@protoc_insertion_point(class_scope:InputSmiles)
+  # @@protoc_insertion_point(class_scope:Input)
   })
-_sym_db.RegisterMessage(InputSmiles)
+_sym_db.RegisterMessage(Input)
 
 Prediction = _reflection.GeneratedProtocolMessageType('Prediction', (_message.Message,), {
   'DESCRIPTOR' : _PREDICTION,
@@ -429,8 +450,8 @@ _MOLECULETRAINER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=644,
-  serialized_end=755,
+  serialized_start=707,
+  serialized_end=850,
   methods=[
   _descriptor.MethodDescriptor(
     name='optimize',
@@ -449,6 +470,16 @@ _MOLECULETRAINER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_TRAININGCONFIG,
     output_type=_TRAININGEND,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='predict',
+    full_name='MoleculeTrainer.predict',
+    index=2,
+    containing_service=None,
+    input_type=_INPUT,
+    output_type=_PREDICTION,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
