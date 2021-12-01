@@ -15,7 +15,7 @@ def main():
 
     # run Bayesian otpimization wiith cross validation
     hidden, layers, heads, bases, lr = optimize(
-        data_filename="./data/train.csv",
+        data_filepath="./data/train.csv",
         smiles_col=smiles_col,
         target_col=target_col,
         batch_size=batch_size,
@@ -28,7 +28,7 @@ def main():
     # Train the model and evaluate on an outer test set
     name = 'evaluation'  # choose a name for the folder where the model is to be saved
     train(
-        data_filename="./data/train.csv",
+        data_filepath="./data/train.csv",
         smiles_col=smiles_col,
         target_col=target_col,
         batch_size=batch_size,
@@ -76,15 +76,11 @@ def main():
         index=[0]
     )
     # standardize the molecule
-    input = standardise_dataset(input, smiles_col='smiles')
-    # create loader
-    input_loader = create_loader(input, smiles_col='smiles', target_col=None, batch_size=batch_size)
-    # iterate through loader and make a prediction
-    predictions = []
-    for data in input_loader:
-        output = model.forward(data)
-        predictions.append(output)
-    print(predictions)
+    smiles = standardise.run(r'{}'.format(smiles))
+    data = smiles2graph(r'{}'.format(smiles))
+    data.batch = zeros(data.num_nodes, dtype=long)
+    output = self.model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
+    output = round(((1 / (1 + np.exp(-output))) * 100), 2)
 
 
 if __name__ == '__main__':

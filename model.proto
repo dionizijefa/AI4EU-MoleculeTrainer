@@ -1,0 +1,61 @@
+//Define the used version of proto
+syntax = "proto3";
+
+//Define a message to hold the Optimization Config
+message OptimizationConfig {
+    string data_filepath            = 1 ;
+    string smiles_col               = 2 ;
+    string target_col               = 3 ;
+    int32 batch_size                = 4 ;
+    int32 seed                      = 5 ;
+    int32 gpu                       = 6 ;
+    int32 n_calls                   = 7 ;
+    int32 n_random_starts           = 8 ;
+}
+
+message OptimizationOutput {
+    int32 hidden_channels           = 7 ;
+    int32 num_layers                = 8 ;
+    int32 num_heads                 = 9 ;
+    int32 num_bases                 = 10 ;
+    float lr                        = 11 ;
+}
+
+//Define a message to hold the Training config
+message TrainingConfig {
+    string data_filepath            = 1 ;
+    string smiles_col               = 2 ;
+    string target_col               = 3 ;
+    int32 batch_size                = 4 ;
+    int32 seed                      = 5 ;
+    int32 gpu                       = 6 ;
+    int32 hidden_channels           = 7 ;
+    int32 num_layers                = 8 ;
+    int32 num_heads                 = 9 ;
+    int32 num_bases                 = 10 ;
+    float lr                        = 11 ;
+    string name                     = 12 ;
+}
+
+message TrainingEnd {
+    string model_directory                = 1 ;
+}
+
+model_directory, problem, target_col, smiles
+message Input {
+    string model_directory        = 1 ;
+    string problem                = 2 ;
+    string target_col             = 3 ;
+    string smiles                 = 4 ;
+}
+
+message Prediction {
+    float prediction               = 1 ;
+}
+
+
+//Define the service
+service MoleculeTrainer {
+    rpc optimize(OptimizationConfig) returns (OptimizationOutput);
+    rpc train(TrainingConfig) returns (TrainingEnd);
+}

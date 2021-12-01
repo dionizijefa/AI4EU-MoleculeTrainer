@@ -1,4 +1,4 @@
-from utils import standardise_dataset, smiles2graph, task_type, cross_val
+from utils import standardise_dataset, smiles2graph, task_type, cross_val, create_loader
 from skopt.space import Categorical, Integer, Real
 from skopt.utils import use_named_args
 from lightning_trainer import Conf, EGConvNet
@@ -13,16 +13,17 @@ from torch_geometric.data import DataLoader
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
 import pandas as pd
-
+from torch import load, Tensor, long, zeros
+from standardiser import standardise
 
 root = Path(__file__).resolve().parents[0].absolute()
 
 
-def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu, n_calls, n_random_starts):
+def optimize(data_filepath, smiles_col, target_col, batch_size, seed, gpu, n_calls, n_random_starts):
     """Training with 5-fold cross validation for molecular prediction tasks"""
 
     print('Starting optimization preprocessing')
-    data = pd.read_csv(data_filename)
+    data = pd.read_csv(data_filepath)
     data = data.loc[~data[target_col].isna()]
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
     # else optimize average precision
@@ -135,13 +136,13 @@ def optimize(data_filename, smiles_col, target_col, batch_size, seed, gpu, n_cal
     return res.x[0], res.x[1], res.x[2], res.x[3], res.x[4]
 
 
-def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
+def train(data_filepath, smiles_col, target_col, batch_size, seed, gpu,
           hidden_channels, num_layers, num_heads, num_bases, lr,
           name):
     """Train a model"""
 
     print('Starting training')
-    data = pd.read_csv(data_filename)
+    data = pd.read_csv(data_filepath)
     data = data.loc[~data[target_col].isna()]
 
     # if the class of interest is the majority class or not heavily disbalanced optimize AUC
@@ -240,3 +241,32 @@ def train(data_filename, smiles_col, target_col, batch_size, seed, gpu,
     )
 
     trainer.fit(model, train_loader, val_loader)
+
+    return logger.log_dir
+
+
+def predict(model_directory, problem, target_col, smiles):
+    """Uses the trained model to make a prediction for an input molecule"""
+
+    if problem == 'classification':
+        problem = 'ap'
+    else:
+        problem = 'regression'
+
+    # load the modal
+    model_path = Path('.{}/checkpoint/'.format(model_directory))
+    files = model_path.glob(r'**/*.ckpt')
+    files = [i for i in files]
+    checkpoint = load(str(files[0]))
+    hparams = checkpoint['hyper_parameters']
+    state_dict = checkpoint['state_dict']
+    model = EGConvNet(problem=problem, hparams=hparams)
+    model.load_state_dict(state_dict)
+
+    smiles = standardise.run(r'{}'.format(smiles))
+    data = smiles2graph(smiles, target_col)
+    data.batch = zeros(data.num_nodes, dtype=long)
+    output = model(data.x, data.edge_index, data.batch).detach().cpu().numpy()[0][0]
+    output = round(((1 / (1 + np.exp(-output))) * 100), 2)
+
+    return output
