@@ -165,7 +165,7 @@ def smiles2graph(data, target_col=None, **kwargs):
         y = data[target_col]
     except:
         pass
-    smiles = data['standardized_smiles']
+    smiles = data['standardized_smiles'][0]
 
     mol = Chem.MolFromSmiles(smiles)
 

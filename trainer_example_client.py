@@ -70,16 +70,23 @@ print(response_training.model_directory)
 test = pd.read_csv('./data/test.csv')
 predictions = []
 for smiles in tqdm(test[smiles_col]):
-    request_prediction = model_pb2.Input(
-        model_directory=response_training.model_directory,
-        problem='classification',
-        target_col=target_col,
-        smiles=smiles
-    )
-    response_prediction = stub.predict(request_prediction)
-    predictions.append(response_prediction.prediction)
+    try:
+        request_prediction = model_pb2.Input(
+            model_directory=response_training.model_directory,
+            problem='classification',
+            target_col=target_col,
+            smiles=smiles
+        )
+        response_prediction = stub.predict(request_prediction)
+        predictions.append(response_prediction.prediction)
+
+    except:
+        print('Bad smiles string')
+        predictions.append(np.nan)
 
 #Evaluate the model according to some metric
+test['predictions'] = predictions
+test = test.loc[~test['predictions'].isna()] #drop failed predictions
 average_precision = average_precision_score(test[target_col], predictions)
 print('Average precision on the test set: {}'.format(average_precision))
 
