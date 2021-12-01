@@ -36,7 +36,7 @@ request_optimization = model_pb2.OptimizationConfig(
     n_calls=n_calls,
     n_random_starts=n_random_starts,
 )
-
+print('Starting optimization')
 response_optimization = stub.optimize(request_optimization)
 
 print('Optimized parameters for the model')
@@ -61,6 +61,7 @@ request_training = model_pb2.TrainingConfig(
     lr=response_optimization.lr,
     name='evaluation'
 )
+print('Starting training')
 response_training = stub.train(request_training)
 
 print('Directory of the trained model is')

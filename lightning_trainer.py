@@ -65,7 +65,6 @@ class EGConvNet(pl.LightningModule, ABC):
             self.hparams.num_bases,
             aggregator=['sum', 'mean', 'max']
         )
-        pl.seed_everything(hparams['seed'])
 
     def forward(self, x, edge_index, batch):
         out = self.model(x, edge_index, batch)
